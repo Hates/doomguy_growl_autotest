@@ -1,0 +1,7 @@
+I spent most of the day struggling to get a good solid working rspec + growl setup working. This is the fruits of my labour. 
+
+After trying many .autotest settings, the London Coding Dojo setup works the best for me within which I mixed in Przemysław Kowalczyk's very very cool Doom Guy code.
+
+London Coding Dojo's Google Group: http://groups.google.com/group/coding-dojo-london
+London Coding Dojo's Github: http://github.com/codingdojolondon/sessions/tree/master
+Przemysław Kowalczyk's Doom Guy: http://szeryf.wordpress.com/2007/07/30/way-beyond-cool-autotest-growl-doomguy
