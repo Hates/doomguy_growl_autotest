@@ -1,0 +1,46 @@
+require 'autotest/redgreen'
+ 
+Autotest.add_hook :initialize do |at|
+  at.clear_mappings
+  # watch out: Ruby bug (1.8.6):
+  # %r(/) != /\//
+  at.add_mapping(%r%^spec/.*_spec.rb$%) { |filename, _|
+    filename
+  }
+  at.add_mapping(%r%^lib/(.*)\.rb$%) { |_, m|
+    ["spec/#{m[1]}_spec.rb"]
+  }
+  at.add_mapping(%r%^spec/(spec_helper|shared/.*)\.rb$%) {
+    at.files_matching %r%^spec/.*_spec\.rb$%
+  }
+end 
+ 
+module Autotest::Growl
+    
+  def self.growl title, msg, image=nil, pri=0
+    title += " in #{Dir.pwd}"
+    system "growlnotify -n autotest --image #{image || "/Applications/Mail.app/Contents/Resources/Caution.tiff"} -p #{pri} -m #{msg.inspect} #{title}"
+  end
+ 
+  Autotest.add_hook :initialize do |at|
+    growl "autotest running", "Started",'~/.autotest_images/pass.png'
+  end
+  
+  Autotest.add_hook :reset do |at|
+      # growl "autotest reset", "Reset",'~/.autotest_images/pending.png'
+  end
+   
+  Autotest.add_hook :red do |at|
+    cnt = [(9 + at.files_to_test.size) / 10 * 10, 50].min 
+    growl "Tests Failed", "#{at.files_to_test.size} tests failed", "~/.autotest_images/fail#{cnt}.png", 2
+  end
+ 
+  Autotest.add_hook :green do |at|
+    growl "Tests Passed", "#{at.results.scan(at.completed_re)}", '~/.autotest_images/pass.png',2 if at.tainted
+  end
+ 
+  Autotest.add_hook :all_good do |at|
+    growl "All Tests Passed", "#{at.results.scan(at.completed_re)}", '~/.autotest_images/pass.png',2 if at.tainted
+  end
+ 
+end
